@@ -6,8 +6,9 @@ import torch.utils.data as data
 import torchvision.transforms as transforms
 from robustbench.utils import download_gdrive
 
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-def load_cifar10(n_examples, data_dir='./data'):
+def load_cifar10(n_examples, data_dir='./data', device=device):
     batch_size = 100
     transform_chain = transforms.Compose([transforms.ToTensor()])
     item = datasets.CIFAR10(root=data_dir, train=False, transform=transform_chain, download=True)
@@ -23,10 +24,10 @@ def load_cifar10(n_examples, data_dir='./data'):
     x_test = torch.cat(x_test)[:n_examples]
     y_test = torch.cat(y_test)[:n_examples]
 
-    return x_test, y_test
+    return x_test.to(device), y_test.to(device)
 
 
-def load_cifar10c(n_examples, severity=5, data_dir='./data', shuffle=False,
+def load_cifar10c(n_examples, severity=5, data_dir='./data', device=device, shuffle=False,
                   corruptions=('shot_noise', 'motion_blur', 'snow', 'pixelate', 'gaussian_noise', 'defocus_blur',
                                  'brightness', 'fog', 'zoom_blur', 'frost', 'glass_blur', 'impulse_noise', 'contrast',
                                  'jpeg_compression', 'elastic_transform')):
@@ -82,7 +83,7 @@ def load_cifar10c(n_examples, severity=5, data_dir='./data', shuffle=False,
     x_test = torch.tensor(x_test)[:n_examples]  # to make sure that we get exactly n_examples but not a few samples more
     y_test = torch.tensor(y_test)[:n_examples]
 
-    return x_test, y_test
+    return x_test.to(device), y_test.to(device)
 
 
 if __name__ == '__main__':
